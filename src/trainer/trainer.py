@@ -11,6 +11,7 @@ from src.model.word2vec_model import Word2Vec
 
 class Trainer:
     def __init__(
+        self,
         vocab_size = 508205,
         embedding_dim = 300,
         batch_size_train = 1500000,
