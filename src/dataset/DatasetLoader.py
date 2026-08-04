@@ -5,13 +5,13 @@ import math
 from tqdm.auto import tqdm
 
 class DatasetLoader(IterableDataset):
-    def __init__(self, file_path, batch_size, neg_num=5):
+    def __init__(self, file_path, batch_size, path_to_neg_dist="neg_distribution.npy", neg_num=5):
         self.file_path = file_path
         self.batch_size = batch_size
         self.neg_num = neg_num
         with open(file_path) as f:
             self.length = sum(1 for _ in f) - 1
-        self.neg_dist = np.load('neg_distribution.npy')
+        self.neg_dist = np.load(path_to_neg_dist)
 
     def __len__(self):
         return self.length * (1+self.neg_num)

@@ -19,7 +19,8 @@ class Trainer:
         new_model = True,
         path_to_train = "train.csv",
         path_to_val = "val_csv",
-        path_to_saved_model = ""
+        path_to_saved_model = "",
+        path_to_negative_dist = "neg_distribution.npy"
     ):
         # assigning variable values
         self.vocab_size = vocab_size
@@ -30,10 +31,19 @@ class Trainer:
         self.path_to_train = path_to_train
         self.path_to_val = path_to_val
         self.path_to_saved_model = path_to_saved_model
+        self.path_to_neg_dist = path_to_neg_dist
 
         # creating dataset and model objects
-        train = DatasetLoader(path_to_train, batch_size_train, neg_num=2)
-        val = DatasetLoader(path_to_val, batch_size_val, neg_num=2)
+        train = DatasetLoader(
+                    path_to_train,
+                    batch_size_train,
+                    path_to_neg_dist=self.path_to_neg_dist,
+                    neg_num=2)
+        val = DatasetLoader(
+                    path_to_val,
+                    batch_size_val,
+                    path_to_neg_dist=self.path_to_neg_dist,
+                    neg_num=2)
         model = self.model_creation()
         model.requires_grad_(True)
 
