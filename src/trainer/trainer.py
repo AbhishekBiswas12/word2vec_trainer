@@ -20,7 +20,7 @@ class Trainer:
         path_to_train = "train.csv",
         path_to_val = "val_csv",
         path_to_saved_model = "",
-        path_to_negative_dist = "neg_distribution.npy"
+        path_to_neg_dist = "neg_distribution.npy"
     ):
         # assigning variable values
         self.vocab_size = vocab_size
@@ -52,7 +52,7 @@ class Trainer:
         optimizer = op.Adagrad(model.parameters(), lr=lr)
         loss = torch.nn.BCEWithLogitsLoss()
 
-    def run():
+    def run(self):
         self.train_model()
         
         
