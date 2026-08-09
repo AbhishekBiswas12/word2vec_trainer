@@ -34,23 +34,23 @@ class Trainer:
         self.path_to_neg_dist = path_to_neg_dist
 
         # creating dataset and model objects
-        train = DatasetLoader(
+        self.train = DatasetLoader(
                     path_to_train,
                     batch_size_train,
                     path_to_neg_dist=self.path_to_neg_dist,
                     neg_num=2)
-        val = DatasetLoader(
+        self.val = DatasetLoader(
                     path_to_val,
                     batch_size_val,
                     path_to_neg_dist=self.path_to_neg_dist,
                     neg_num=2)
-        model = self.model_creation()
-        model.requires_grad_(True)
+        self.model = self.model_creation()
+        self.model.requires_grad_(True)
 
         # Learning rate, optimizer, loss selection -> TODO: assign from user choice
-        lr = 0.01
-        optimizer = op.Adagrad(model.parameters(), lr=lr)
-        loss = torch.nn.BCEWithLogitsLoss()
+        self.lr = 0.01
+        self.optimizer = op.Adagrad(self.model.parameters(), lr=self.lr)
+        self.loss = torch.nn.BCEWithLogitsLoss()
 
     def run(self):
         self.train_model()
@@ -66,7 +66,7 @@ class Trainer:
         else:
             return torch.load(self.path_to_saved_model, weights_only=False) 
 
-    def validate_model(self, model, train_loader, val_loader, device):
+    def validate_model(self, device='cpu'):
         val_loss = 0.0
         val_size = 0
         
@@ -79,18 +79,16 @@ class Trainer:
         val_pos_size = 0
         val_neg_size = 0
         
-        
         train_loss = 0.0
         train_size = 0
-        model.eval()
-        # input_dim_val = (len(x_val), 1)
+        self.model.eval()
         
         with torch.no_grad():
-            for x in tqdm(train_loader, desc=f"Computing Train Loss", total=num_batches_train):
+            for x in tqdm(self.train, desc=f"Computing Train Loss"):
                 context = x[:, 0].to(device)
                 target = x[:, 1].to(device)
                 labels = x[:, 2].to(device)
-                scores = model(context, target)
+                scores = self.model(context, target)
                 probs = torch.sigmoid(scores)
                 
                 train_pos_probs += probs[labels == 1].sum().item()
@@ -99,16 +97,16 @@ class Trainer:
                 train_pos_size += probs[labels==1].size()[0]
                 train_neg_size += probs[labels==0].size()[0]
                 
-                l = loss(scores, labels.float())
+                l = self.loss(scores, labels.float())
                 train_loss += l.item() * context.shape[0]
                 train_size += context.shape[0]
             
-            for y in tqdm(val_loader, desc=f"Computing Validation Loss", total=num_batches_val):
+            for y in tqdm(self.val, desc=f"Computing Validation Loss"):
                 context = y[:, 0].to(device)
                 target = y[:, 1].to(device)
                 labels = y[:, 2].to(device)
                 
-                scores = model(context, target)
+                scores = self.model(context, target)
                 probs = torch.sigmoid(scores)
                 
                 val_pos_probs += probs[labels == 1].sum().item()
@@ -117,7 +115,7 @@ class Trainer:
                 val_pos_size += probs[labels==1].size()[0]
                 val_neg_size += probs[labels==0].size()[0]
                 
-                l = loss(scores, labels.float())
+                l = self.loss(scores, labels.float())
                 val_loss += l.item() * context.shape[0]
                 val_size += context.shape[0]
             
@@ -130,7 +128,7 @@ class Trainer:
         val_pos_probs /= val_pos_size
         val_neg_probs /= val_neg_size
         
-        model.train()
+        self.model.train()
         return train_loss, train_pos_probs, train_neg_probs, val_loss, val_pos_probs, val_neg_probs
 
     def train_model(self):
@@ -146,19 +144,19 @@ class Trainer:
                 batch_size = target.shape[0]
                 
                 # Forward
-                scores = model(context, target)
+                scores = self.model(context, target)
                 
-                l = loss(scores, labels.float())
+                l = self.loss(scores, labels.float())
                 
                 # Backprop
                 l.backward()
-            optimizer.zero_grad()
-            optimizer.step()
-            train_loss, train_pos_probs, train_neg_probs, val_loss, val_pos_probs, val_neg_probs = self.validate_model(model, train_loader, val_loader)
+            self.optimizer.zero_grad()
+            self.optimizer.step()
+            train_loss, train_pos_probs, train_neg_probs, val_loss, val_pos_probs, val_neg_probs = self.validate_model()
             with open('train_losses.txt', 'a') as losses, open('val_losses.txt', 'a') as val_losses:
                 losses.write(f"{train_loss}\t{train_pos_probs}\t{train_neg_probs}\n")
                 val_losses.write(f"{val_loss}\t{val_pos_probs}\t{val_neg_probs}\n")
                 print(f"Epoch {epoch+1}, Loss: {train_loss}, Positive probabs: {train_pos_probs}, Negative probabs: {train_neg_probs}\n Val_loss: {val_loss}, Positive probabs {val_pos_probs}, Negative probabs: {val_neg_probs}")  
                 if self.path_to_saved_model != '':
-                    torch.save(model, )
+                    torch.save(self.model, )
                     print(f"Model saved after {epoch+1} epochs")
