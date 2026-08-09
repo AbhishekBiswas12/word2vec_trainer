@@ -136,8 +136,9 @@ class Trainer:
     def train_model(self):
         epochs = 50
         epoch = len(open('train_losses.txt', 'r').readlines())
+        print("starting training...")
         for epoch in range(epoch, epochs):
-            for x in tqdm(train_loader, desc=f"Epoch {epoch+1}", total=num_batches_train):
+            for x in tqdm(self.train, desc=f"Epoch {epoch+1}"):
                 context = x[:, 0]
                 target = x[:, 1]
                 labels = x[:, 2]
@@ -150,9 +151,9 @@ class Trainer:
                 l = loss(scores, labels.float())
                 
                 # Backprop
-                optimizer.zero_grad()
                 l.backward()
-                optimizer.step()
+            optimizer.zero_grad()
+            optimizer.step()
             train_loss, train_pos_probs, train_neg_probs, val_loss, val_pos_probs, val_neg_probs = self.validate_model(model, train_loader, val_loader)
             with open('train_losses.txt', 'a') as losses, open('val_losses.txt', 'a') as val_losses:
                 losses.write(f"{train_loss}\t{train_pos_probs}\t{train_neg_probs}\n")
