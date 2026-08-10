@@ -14,9 +14,7 @@ class DatasetLoader(IterableDataset):
         with open(file_path) as f:
             self.length = sum(1 for _ in f) - 1
         self.neg_dist = np.load(path_to_neg_dist)
-        self.total_batches=math.ceil(
-                            self.length * (1 + self.neg_num))/self.batch_size
-                           )
+        self.total_batches=math.ceil(self.length * (1 + self.neg_num))/self.batch_size)
 
     def __len__(self):
         return self.length * (1+self.neg_num)
