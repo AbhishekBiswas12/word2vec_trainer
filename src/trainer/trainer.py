@@ -136,7 +136,7 @@ class Trainer:
         epoch = len(open('train_losses.txt', 'r').readlines())
         print("starting training...")
         for epoch in range(epoch, epochs):
-            for x in tqdm(self.train, desc=f"Epoch {epoch+1}"):
+            for x in tqdm(self.train, desc=f"Epoch {epoch+1}", total=self.train.total_batches):
                 context = x[:, 0]
                 target = x[:, 1]
                 labels = x[:, 2]

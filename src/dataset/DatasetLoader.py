@@ -6,6 +6,7 @@ import math
 from tqdm.auto import tqdm
 
 class DatasetLoader(IterableDataset):
+    self.total_batches = 0
     def __init__(self, file_path, batch_size, path_to_neg_dist="neg_distribution.npy", neg_num=5):
         self.file_path = file_path
         self.batch_size = batch_size
