@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "word2vec-trainer"
+version = "0.1.0"
+description = "A PyTorch-based Word2Vec training library"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+
+authors = [
+    { name = "Abhishek Biswas" }
+]
+
+dependencies = [
+    "torch>=2.0"
+]
+
+[project.urls]
+Repository = "https://github.com/AbhishekBiswas12/word2vec_trainer"
+Issues = "https://github.com/AbhishekBiswas12/word2vec_trainer/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
