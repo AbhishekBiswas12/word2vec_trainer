@@ -84,7 +84,7 @@ class Trainer:
         self.model.eval()
         
         with torch.no_grad():
-            for x in tqdm(self.train, desc=f"Computing Train Loss"):
+            for x in tqdm(self.train, desc=f"Computing Train Loss", total=self.train.total_batches):
                 context = x[:, 0].to(device)
                 target = x[:, 1].to(device)
                 labels = x[:, 2].to(device)
@@ -101,7 +101,7 @@ class Trainer:
                 train_loss += l.item() * context.shape[0]
                 train_size += context.shape[0]
             
-            for y in tqdm(self.val, desc=f"Computing Validation Loss"):
+            for y in tqdm(self.val, desc=f"Computing Validation Loss", total=self.val.total_batches):
                 context = y[:, 0].to(device)
                 target = y[:, 1].to(device)
                 labels = y[:, 2].to(device)
