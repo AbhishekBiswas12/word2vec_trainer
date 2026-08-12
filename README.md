@@ -35,7 +35,7 @@ word2vec_trainer/
 │
 ├── tests/
 │   ├── test_dataset.py
-│   ├── test_preprocessor.py
+│   ├── test_preprocessing.py
 │   ├── test_model.py
 │   └── test_trainer.py
 │
