@@ -5,21 +5,23 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "word2vec-trainer"
 version = "0.1.0"
-description = "A PyTorch-based Word2Vec training library"
+description = "A PyTorch implementation of Word2Vec for learning and experimentation"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
 
 authors = [
-    { name = "Abhishek Biswas" }
+    { 
+	name = "Abhishek Biswas",
+	email = "rohan.abiswas@gmail.com"
+    }
 ]
 
 dependencies = [
     "torch>=2.0",
-    "numpy>=2.0.0",
-    "pandas>=2.2.0",
-    "regex>=2026.0.0",
-    "tqdm>=4.64.0"
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "tqdm>=4.64"
 ]
 
 [project.urls]
