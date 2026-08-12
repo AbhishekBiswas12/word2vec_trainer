@@ -28,10 +28,10 @@ word2vec_trainer/
 │
 ├── src/
 │   └── word2vec_trainer/
-│       ├── dataset/
-│       ├── model/
-│       ├── preprocessor/
-│       └── trainer/
+│       ├── dataset_loader.py
+│       ├── word2vec_model.py
+│       ├── preprocessing.py
+│       └── trainer.py
 │
 ├── tests/
 │   ├── test_dataset.py
@@ -73,7 +73,7 @@ cd word2vec_trainer
 Install in editable mode:
 
 ```bash
-pip install -e .
+python -m pip install -e .
 ```
 
 ## Usage
