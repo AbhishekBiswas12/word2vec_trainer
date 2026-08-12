@@ -1,12 +1,10 @@
 import torch
 import torch.nn.functional as F
 import torch.optim as op
-from torch.utils.data import IterableDataset
-from torch.utils.data import DataLoader
 import numpy as np
 import math
 from tqdm.auto import tqdm
-from src.dataset.DatasetLoader import DatasetLoader
+from src.dataset.dataset_loader import DatasetLoader
 from src.model.word2vec_model import Word2Vec
 
 class Trainer:
