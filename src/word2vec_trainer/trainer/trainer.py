@@ -4,8 +4,8 @@ import torch.optim as op
 import numpy as np
 import math
 from tqdm.auto import tqdm
-from src.dataset.dataset_loader import DatasetLoader
-from src.model.word2vec_model import Word2Vec
+from word2vec_trainer.dataset.dataset_loader import DatasetLoader
+from word2vec_trainer.model.word2vec_model import Word2Vec
 
 class Trainer:
     def __init__(
