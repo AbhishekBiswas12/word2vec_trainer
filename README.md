@@ -4,7 +4,7 @@ A PyTorch implementation of **Word2Vec** built as a learning project to understa
 
 ## About
 
-I built this project while learning about **Word2Vec, Skip-gram, negative sampling, and word embeddings**.
+I wanted to understand Word2Vec beyond the API, so I implemented the training pipeline myself and packaged it as a Python library. I built this project while learning about **Word2Vec, Skip-gram, negative sampling, and word embeddings**.
 
 The goal was to implement the main components myself and understand how they work rather than treating Word2Vec as a black box.
 
