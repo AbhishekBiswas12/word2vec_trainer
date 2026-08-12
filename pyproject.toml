@@ -11,10 +11,7 @@ requires-python = ">=3.10"
 license = { file = "LICENSE" }
 
 authors = [
-    { 
-	name = "Abhishek Biswas",
-	email = "rohan.abiswas@gmail.com"
-    }
+    { name = "Abhishek Biswas", email = "rohan.abiswas@gmail.com" }
 ]
 
 dependencies = [
