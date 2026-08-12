@@ -3,3 +3,6 @@ src/**/__pycache__
 src/**/.ipynb_checkpoints
 .DS_Store
 *.egg-info/
+__pycache__/
+*.py[cod]
+.pytest_cache/
