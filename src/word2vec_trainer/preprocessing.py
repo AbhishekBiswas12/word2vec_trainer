@@ -6,6 +6,7 @@ import numpy as np
 import csv
 
 class Preprocessing:
+  vocabulary_size = None
   def __init__(self, 
                cleaned_data_file_path = 'cleaned_data.txt',
                subsampled_file_path = 'subsampled_data.txt',
@@ -17,7 +18,7 @@ class Preprocessing:
                valid_ratio = 0.025,
                test_path = 'test_w2v.csv',
                test_ratio = 0.025,
-               window = 10):
+               window = 5):
     self.cleaned_data_file_path = cleaned_data_file_path
     self.subsampled_file_path = subsampled_file_path
     self.vocabulary_file = vocabulary_file
@@ -45,13 +46,14 @@ class Preprocessing:
   def vocabulary_subsampling(self):
     cleaned_text = open(self.cleaned_data_file_path, 'r').read()
     print('Creating Vocabulary...')
-    vocabulary = pd.DataFrame(pd.DataFrame(cleaned_text.split(" ")).value_counts())[pd.DataFrame(pd.DataFrame(cleaned_text.split(" ")).value_counts())['count'] >= 5]
+    vocabulary = pd.DataFrame(pd.DataFrame(cleaned_text.split(" ")).value_counts())[pd.DataFrame(pd.DataFrame(cleaned_text.split(" ")).value_counts())['count'] >= 2]
     vocabulary.reset_index(inplace=True)
     print('Columns of vocabulary:', vocabulary.columns)
     vocabulary.loc[len(vocabulary)] = [r'<UNK>', 0]
     vocabulary.rename(columns={0: 'Word'}, inplace=True)
     print("Created Vocabulary.")
     vocabulary.to_csv(self.vocabulary_file)
+    self.vocabulary_size = len(vocabulary.index)
     print('Saved vocabulary.')
 
     # subsampling
@@ -90,6 +92,7 @@ class Preprocessing:
 
   def negative_distribution_calc(self):
     text = open(self.subsampled_file_path, 'r').read().split(" ")[:-1]
+    text = [int(num) for num in text]
     counts = np.bincount(text)
     scaled_counts = counts**0.75
     neg_dist = (scaled_counts/np.sum(scaled_counts))
@@ -97,6 +100,7 @@ class Preprocessing:
 
   def positive_example_gen(self, counts):
     sampled_text = open(self.subsampled_file_path, 'r').read().split(" ")[:-1]
+    sampled_text = [int(x) for x in sampled_text]
     window = self.window
     pairs = {
         'int': [],
@@ -113,15 +117,14 @@ class Preprocessing:
       pairs['target'].extend(dic['target'])
       pairs['pred'].extend(dic['pred'])
 
-      if i%1000000==0:
-        with open(self.pos_examples, "a", newline="", encoding="utf-8") as f:
-          writer = csv.writer(f)
-          writer.writerows(zip(*pairs.values()))
-          pairs = {
-              'int': [],
-              'target': [],
-              'pred': []
-          }
+      with open(self.pos_examples, "a", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerows(zip(*pairs.values()))
+        pairs = {
+          'int': [],
+          'target': [],
+          'pred': []
+        }
   
   def train_test_val_split(self):
     train_count = 0

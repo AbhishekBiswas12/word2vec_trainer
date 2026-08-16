@@ -18,7 +18,9 @@ class Trainer:
         path_to_train = "train.csv",
         path_to_val = "val_csv",
         path_to_saved_model = "",
-        path_to_neg_dist = "neg_distribution.npy"
+        path_to_neg_dist = "neg_distribution.npy",
+        epochs = 50,
+        lr = 0.01
     ):
         # assigning variable values
         self.vocab_size = vocab_size
@@ -28,8 +30,9 @@ class Trainer:
         self.new_model = new_model
         self.path_to_train = path_to_train
         self.path_to_val = path_to_val
-        self.path_to_saved_model = path_to_saved_model
+        self.path_to_saved_model = path_to_saved_model if path_to_saved_model != "" else 'word2vec_model.bin' 
         self.path_to_neg_dist = path_to_neg_dist
+        self.epochs = epochs
 
         # creating dataset and model objects
         self.train = DatasetLoader(
@@ -46,7 +49,7 @@ class Trainer:
         self.model.requires_grad_(True)
 
         # Learning rate, optimizer, loss selection -> TODO: assign from user choice
-        self.lr = 0.01
+        self.lr = lr
         self.optimizer = op.Adagrad(self.model.parameters(), lr=self.lr)
         self.loss = torch.nn.BCEWithLogitsLoss()
 
@@ -130,10 +133,10 @@ class Trainer:
         return train_loss, train_pos_probs, train_neg_probs, val_loss, val_pos_probs, val_neg_probs
 
     def train_model(self):
-        epochs = 50
         epoch = len(open('train_losses.txt', 'r').readlines())
         print("starting training...")
-        for epoch in range(epoch, epochs):
+        for epoch in range(epoch, self.epochs):
+            self.optimizer.zero_grad()
             for x in tqdm(self.train, desc=f"Epoch {epoch+1}", total=self.train.total_batches):
                 context = x[:, 0]
                 target = x[:, 1]
@@ -148,7 +151,6 @@ class Trainer:
                 
                 # Backprop
                 l.backward()
-            self.optimizer.zero_grad()
             self.optimizer.step()
             train_loss, train_pos_probs, train_neg_probs, val_loss, val_pos_probs, val_neg_probs = self.validate_model()
             with open('train_losses.txt', 'a') as losses, open('val_losses.txt', 'a') as val_losses:
@@ -156,5 +158,5 @@ class Trainer:
                 val_losses.write(f"{val_loss}\t{val_pos_probs}\t{val_neg_probs}\n")
                 print(f"Epoch {epoch+1}, Loss: {train_loss}, Positive probabs: {train_pos_probs}, Negative probabs: {train_neg_probs}\n Val_loss: {val_loss}, Positive probabs {val_pos_probs}, Negative probabs: {val_neg_probs}")  
                 if self.path_to_saved_model != '':
-                    torch.save(self.model, )
+                    torch.save(self.model, self.path_to_saved_model)
                     print(f"Model saved after {epoch+1} epochs")
