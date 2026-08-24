@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "word2vec-trainer"
+name = "word2vec-trainer-pytorch"
 version = "0.1.0"
 description = "A PyTorch implementation of Word2Vec for learning and experimentation"
 readme = "README.md"
