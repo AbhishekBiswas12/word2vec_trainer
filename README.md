@@ -63,6 +63,8 @@ Learned Word Embeddings
 
 ## Installation
 
+### From Github
+
 Clone the repository:
 
 ```bash
@@ -76,12 +78,18 @@ Install in editable mode:
 python -m pip install -e .
 ```
 
+### From PyPI
+
+```bash
+python -m pip install word2vec-trainer-pytorch
+```
+
 ## Usage
 
 A basic training example is available in:
 
 ```text
-examples/basic_training.py
+examples/word2vec_trainer_example.ipynb
 ```
 
 The public API is still evolving as the project develops.
