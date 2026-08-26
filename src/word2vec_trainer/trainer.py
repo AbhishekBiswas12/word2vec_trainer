@@ -56,7 +56,6 @@ class Trainer:
     def run(self):
         self.train_model()
         
-        
     def model_creation(self):
         if self.new_model:
             print("Creating train_losses.txt")
@@ -67,70 +66,69 @@ class Trainer:
         else:
             return torch.load(self.path_to_saved_model, weights_only=False) 
 
-    def validate_model(self, device='cpu'):
-        val_loss = 0.0
-        val_size = 0
-        
-        train_pos_probs = 0.0
-        train_neg_probs = 0.0
-        train_pos_size = 0
-        train_neg_size = 0
-        val_pos_probs = 0.0
-        val_neg_probs = 0.0
-        val_pos_size = 0
-        val_neg_size = 0
-        
-        train_loss = 0.0
-        train_size = 0
-        self.model.eval()
-        
-        with torch.no_grad():
-            for x in tqdm(self.train, desc=f"Computing Train Loss", total=self.train.total_batches):
-                context = x[:, 0].to(device)
-                target = x[:, 1].to(device)
-                labels = x[:, 2].to(device)
-                scores = self.model(context, target)
-                probs = torch.sigmoid(scores)
-                
-                train_pos_probs += probs[labels == 1].sum().item()
-                train_neg_probs += probs[labels == 0].sum().item()
-                
-                train_pos_size += probs[labels==1].size()[0]
-                train_neg_size += probs[labels==0].size()[0]
-                
-                l = self.loss(scores, labels.float())
-                train_loss += l.item() * context.shape[0]
-                train_size += context.shape[0]
-            
-            for y in tqdm(self.val, desc=f"Computing Validation Loss", total=self.val.total_batches):
-                context = y[:, 0].to(device)
-                target = y[:, 1].to(device)
-                labels = y[:, 2].to(device)
-                
-                scores = self.model(context, target)
-                probs = torch.sigmoid(scores)
-                
-                val_pos_probs += probs[labels == 1].sum().item()
-                val_neg_probs += probs[labels == 0].sum().item()
-                
-                val_pos_size += probs[labels==1].size()[0]
-                val_neg_size += probs[labels==0].size()[0]
-                
-                l = self.loss(scores, labels.float())
-                val_loss += l.item() * context.shape[0]
-                val_size += context.shape[0]
-            
-        train_loss /= train_size
-        val_loss /= val_size
-        
-        train_pos_probs /= train_pos_size
-        train_neg_probs /= train_neg_size
-        
-        val_pos_probs /= val_pos_size
-        val_neg_probs /= val_neg_size
-        
-        self.model.train()
-        return train_loss, train_pos_probs, train_neg_probs, val_loss, val_pos_probs, val_neg_probs
+    def validate_model(model, train_loader, val_loader, device):
+      val_loss = 0.0
+      val_size = 0
+
+      train_pos_scores = 0.0
+      train_neg_scores = 0.0
+      train_pos_size = 0
+      train_neg_size = 0
+      val_pos_scores = 0.0
+      val_neg_scores = 0.0
+      val_pos_size = 0
+      val_neg_size = 0
+
+
+      train_loss = 0.0
+      train_size = 0
+      model.eval()
+
+      with torch.no_grad():
+        for x in tqdm(train_loader, desc=f"Computing Train Loss", total=num_batches_train):
+          context = x[:, 0].to(device)
+          target = x[:, 1].to(device)
+          labels = x[:, 2].to(device)
+          scores = model(context, target)
+
+          train_pos_scores += scores[labels == 1].sum().item()
+          train_neg_scores += scores[labels == 0].sum().item()
+
+          train_pos_size += scores[labels==1].size()[0]
+          train_neg_size += scores[labels==0].size()[0]
+
+          l = loss(scores, labels.float())
+          train_loss += l.item() * context.shape[0]
+          train_size += context.shape[0]
+
+        for y in tqdm(val_loader, desc=f"Computing Validation Loss", total=num_batches_val):
+          context = y[:, 0].to(device)
+          target = y[:, 1].to(device)
+          labels = y[:, 2].to(device)
+
+          scores = model(context, target)
+
+          val_pos_scores += scores[labels == 1].sum().item()
+          val_neg_scores += scores[labels == 0].sum().item()
+
+          val_pos_size += scores[labels==1].size()[0]
+          val_neg_size += scores[labels==0].size()[0]
+
+          l = loss(scores, labels.float())
+          val_loss += l.item() * context.shape[0]
+          val_size += context.shape[0]
+
+      train_loss /= train_size
+      val_loss /= val_size
+
+      train_pos_scores /= train_pos_size
+      train_neg_scores /= train_neg_size
+
+      val_pos_scores /= val_pos_size
+      val_neg_scores /= val_neg_size
+
+      model.train()
+      return train_loss, train_pos_scores, train_neg_scores, val_loss, val_pos_scores, val_neg_scores
 
     def train_model(self):
         epoch = len(open('train_losses.txt', 'r').readlines())
@@ -152,11 +150,11 @@ class Trainer:
                 # Backprop
                 l.backward()
             self.optimizer.step()
-            train_loss, train_pos_probs, train_neg_probs, val_loss, val_pos_probs, val_neg_probs = self.validate_model()
+            train_loss, train_pos_scores, train_neg_scores, val_loss, val_pos_scores, val_neg_scores = validate_model(model, train_loader, val_loader, 'cuda')
             with open('train_losses.txt', 'a') as losses, open('val_losses.txt', 'a') as val_losses:
-                losses.write(f"{train_loss}\t{train_pos_probs}\t{train_neg_probs}\n")
-                val_losses.write(f"{val_loss}\t{val_pos_probs}\t{val_neg_probs}\n")
-                print(f"Epoch {epoch+1}, Loss: {train_loss}, Positive probabs: {train_pos_probs}, Negative probabs: {train_neg_probs}\n Val_loss: {val_loss}, Positive probabs {val_pos_probs}, Negative probabs: {val_neg_probs}")  
-                if self.path_to_saved_model != '':
-                    torch.save(self.model, self.path_to_saved_model)
-                    print(f"Model saved after {epoch+1} epochs")
+                losses.write(f"{train_loss}\t{train_pos_scores}\t{train_neg_scores}\n")
+                val_losses.write(f"{val_loss}\t{val_pos_scores}\t{val_neg_scores}\n")
+            print(f"Epoch {epoch+1}, Loss: {train_loss}, Positive probabs: {train_pos_scores}, Negative probabs: {train_neg_scores}\n Val_loss: {val_loss}, Positive probabs: {val_pos_scores}, Negative probabs: {val_neg_scores}")  
+            if self.path_to_saved_model != '':
+                torch.save(self.model, self.path_to_saved_model)
+                print(f"Model saved after {epoch+1} epochs")
