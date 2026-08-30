@@ -21,9 +21,10 @@ class Word2Vec_Trainer:
         batch_size_train = 1500000,
         batch_size_val = 50000,
         new_model = True,
-        path_to_saved_model = "",
+        path_to_saved_model = 'word2vec_model.bin',
         epochs = 50,
-        lr = 0.01
+        lr = 0.01,
+        neg_distribution_path='neg_distribution_test.npy'
     ):
         # Preprocessor params
         self.cleaned_data_file_path = cleaned_data_file_path
@@ -42,9 +43,10 @@ class Word2Vec_Trainer:
         self.batch_size_train = batch_size_train
         self.batch_size_val = batch_size_val
         self.new_model = new_model
-        self.path_to_saved_model = path_to_saved_model!="" if path_to_saved_model!="" else "word2vec_model.bin"
+        self.path_to_saved_model = path_to_saved_model
         self.epochs = epochs
         self.lr = lr
+        self.neg_distribution_path=neg_distribution_path
         preprocessor = None
         trainer = None
 
@@ -60,7 +62,8 @@ class Word2Vec_Trainer:
             self.valid_ratio,
             self.test_path,
             self.test_ratio,
-            self.window
+            self.window,
+            self.neg_distribution_path
         )
 
         self.preprocessor.run()
@@ -75,7 +78,7 @@ class Word2Vec_Trainer:
             path_to_train = self.path_to_train,
             path_to_val = self.path_to_val,
             path_to_saved_model = self.path_to_saved_model,
-            path_to_neg_dist = self.path_to_neg_dist,
+            path_to_neg_dist = self.neg_distribution_path,
             epochs = self.epochs,
             lr = self.lr
         )

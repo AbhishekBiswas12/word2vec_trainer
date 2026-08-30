@@ -18,7 +18,9 @@ class Preprocessing:
                valid_ratio = 0.025,
                test_path = 'test_w2v.csv',
                test_ratio = 0.025,
-               window = 5):
+               window = 5,
+               neg_distribution_path='neg_distribution_test.npy'
+               ):
     self.cleaned_data_file_path = cleaned_data_file_path
     self.subsampled_file_path = subsampled_file_path
     self.vocabulary_file = vocabulary_file
@@ -31,6 +33,8 @@ class Preprocessing:
     self.test_path = test_path
     self.test_ratio = test_ratio
     self.vocabulary_size = 0
+    self.neg_distribution_path=neg_distribution_path
+    
     with open(self.pos_examples, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         # Write header
@@ -97,7 +101,7 @@ class Preprocessing:
     counts = np.bincount(text)
     scaled_counts = counts**0.75
     neg_dist = (scaled_counts/np.sum(scaled_counts))
-    np.save('neg_distribution_test.npy', neg_dist)
+    np.save(self.neg_distribution_path, neg_dist)
 
   def positive_example_gen(self, counts):
     sampled_text = open(self.subsampled_file_path, 'r').read().split(" ")[:-1]
