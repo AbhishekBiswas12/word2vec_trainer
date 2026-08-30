@@ -1,4 +1,4 @@
-from word2vec_trainer.preprocessing import Preprocessor
+from word2vec_trainer.preprocessing import Preprocessing
 from word2vec_trainer.trainer import Trainer
 
 class Word2Vec_Trainer:
@@ -49,7 +49,7 @@ class Word2Vec_Trainer:
         trainer = None
 
     def preprocessing(self):
-        self.preprocessor = Preprocessor(
+        self.preprocessor = Preprocesssing(
             self.cleaned_data_file_path,
             self.subsampled_file_path,
             self.vocabulary_file,
