@@ -42,7 +42,7 @@ class Word2Vec_Trainer:
         self.batch_size_train = batch_size_train
         self.batch_size_val = batch_size_val
         self.new_model = new_model
-        self.path_to_saved_model = path_to_saved_model!="" ? path_to_saved_model : "word2vec_model.bin"
+        self.path_to_saved_model = path_to_saved_model!="" if path_to_saved_model!="" else "word2vec_model.bin"
         self.epochs = epochs
         self.lr = lr
         preprocessor = None
