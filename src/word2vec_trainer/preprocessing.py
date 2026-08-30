@@ -30,6 +30,7 @@ class Preprocessing:
     self.valid_ratio = valid_ratio
     self.test_path = test_path
     self.test_ratio = test_ratio
+    self.vocabulary_size = 0
     with open(self.pos_examples, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         # Write header
