@@ -51,7 +51,7 @@ class Word2Vec_Trainer:
         trainer = None
 
     def preprocessing(self):
-        self.preprocessor = Preprocesssing(
+        self.preprocessor = Preprocessing(
             self.cleaned_data_file_path,
             self.subsampled_file_path,
             self.vocabulary_file,
