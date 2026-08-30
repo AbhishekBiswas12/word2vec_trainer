@@ -69,7 +69,7 @@ class Word2Vec_Trainer:
         self.preprocessor.run()
 
     def train(self):
-        self.trainer(
+        self.trainer = Trainer(
             vocab_size = self.preprocessor.vocabulary_size,
             embedding_dim = self.embedding_dim,
             batch_size_train = self.batch_size_train,
