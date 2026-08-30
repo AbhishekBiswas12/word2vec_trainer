@@ -112,13 +112,12 @@ I used these tools as learning and development assistance while working to under
 
 ## Status
 
-🚧 **Work in progress**
+- Public API is available in PyPI. Package can be installed and used using the command mentioned above in **Installation section**
 
 Future improvements include:
 
 - Improve the public API
 - Expand test coverage
-- Add more examples
 - Add embedding evaluation and visualization
 - Benchmark different training configurations
 - Publish the package to PyPI
